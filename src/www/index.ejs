@@ -20,11 +20,34 @@
     <script>
         const socket = io();
 
+
+        socket.on('serverMessage', async (msg, callback) => {
+            console.log("msg",msg);
+            // Display the incoming message
+            let chat = document.querySelector('.chat');
+            let message = document.createElement('div');
+            message.innerHTML = `<p>${msg.time} - <strong>${msg.user}</strong>: ${msg.content}</p>`;
+            chat.appendChild(message);
+
+        });
+
+        // Optional: Handle connection errors
+        socket.on("connect_error", (error) => {
+            console.error("Socket.IO Connection Error:", error);
+        });
+
+        // Optional: Define what happens when the connection is disconnected
+        socket.on("disconnect", () => {
+            console.log("Socket.IO connection disconnected");
+        });
+
         let data = {
             time: "",
             user: "",
             content: ""
         };
+
+
 
         function send() {
             let user = document.getElementById("user-in");
@@ -34,8 +57,10 @@
             data.user = user.value;
             data.content = content.value;
             data.time = new Date();
-            socket.emit('clientEvent', data);
+            socket.emit('message', data);
         }
+
+
     </script>
 </body>
 </html>

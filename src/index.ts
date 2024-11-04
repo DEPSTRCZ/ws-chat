@@ -32,14 +32,15 @@ io.on("connection", (socket) => {
 });
 
 io.on('connection', (socket) => {
-    socket.on('clientEvent', (data) => {
+    socket.on('message', (data) => {
       console.log('Received data:', data);
       // You can emit a response back to the client here
       messages.push(data);
       console.log(messages)
-      socket.emit('responseEvent', 'Server received your message!');
+        io.emit('serverMessage', data);
     });
 });
+
 
 httpServer.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
