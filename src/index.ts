@@ -8,6 +8,8 @@ const port = 3000;
 const httpServer = http.createServer(app);
 const io = new Server(httpServer);
 
+app.set("view engine", "ejs");
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
