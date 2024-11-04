@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WS-Chat</title>
+    <link type="text/css" href="style.css">
+</head>
+<body>
+    <!-- <script src="ejs.js"></script> -->
+    <div class="chat">
+        <%- include('../www/messages'); %>
+    </div>
+    <div class="input">
+        <input type="text" id="user-in">
+        <input type="text" id="content-in">
+        <input type="button" value="send" onclick="send()">
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        let data = {
+            time: "",
+            user: "",
+            content: ""
+        };
+
+        function send() {
+            let user = document.getElementById("user-in");
+            let content = document.getElementById("content-in");
+            let date = new Date();
+            
+            data.user = user.value;
+            data.content = content.value;
+            data.time = new Date();
+            socket.emit('clientEvent', data);
+        }
+    </script>
+</body>
+</html>
