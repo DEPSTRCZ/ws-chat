@@ -39,6 +39,10 @@ io.on('connection', (socket) => {
       console.log(messages)
         io.emit('serverMessage', data);
     });
+    socket.on('getPast', () => {
+        io.emit('serverReturn', messages);
+        console.log("reqest for older messages")
+    });
 });
 
 
