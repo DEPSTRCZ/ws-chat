@@ -19,6 +19,10 @@ app.get("/", (req, res) => {
     res.render('index', {messages: messages});
 });
 
+app.post("/new", (req, res) => {
+    res.send("New message");
+});
+
 
 io.on("connection", (socket) => {
     console.log("A user connected");
