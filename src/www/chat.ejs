@@ -9,14 +9,23 @@
 <body>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        console.log(token);
+
+        // Connect to the server with the JWT token
+        const socket = io("http://192.168.13.62:3000?token=" + token);
         let messages = new Array();
 
         let data = {
             time: "",
-            user: "",
+            userName: "",
             content: ""
         }
+
+        // Get token from url parmas
+
+
 
         getPast();
         
@@ -44,11 +53,10 @@
         });
 
         function send() {
-            let user = document.getElementById("user-in");
+            console.log("send");
             let content = document.getElementById("content-in");
             let date = new Date();
             
-            data.user = user.value;
             data.content = content.value;
             data.time = new Date();
             socket.emit('message', data);
@@ -60,7 +68,7 @@
 
         function formatTime(time) {
             if (String(time).length == 1) {
-                return 0 + time;
+                return "0" + time;
             } 
             return String(time);
         }
@@ -84,7 +92,7 @@
                     + formatTime(messageTime.getSeconds());
 
                 let user = document.createElement("p");
-                user.innerText = message.user;
+                user.innerText = message.userName;
                 user.classList = "user";
                 
                 let content = document.createElement("h3");
@@ -102,7 +110,6 @@
     <div id="chat">
     </div>
     <div class="input">
-        <input type="text" id="user-in">
         <input type="text" id="content-in">
         <input type="button" value="send" onclick="send()">
     </div>
