@@ -15,12 +15,26 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        console.log(token);
+        function getCookieByName(name) {
+            const cookies = decodeURIComponent(document.cookie).split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return null;
+        }
+        const token = getCookieByName("token");
+        console.log("ss",token);
+
 
         // Connect to the server with the JWT token
-        const socket = io("http://localost:3000?token=" + token);
+        const socket = io({
+            auth: {
+                token: token
+            }
+        });
         let messages = new Array();
 
         let data = {
@@ -28,10 +42,6 @@
             userName: "",
             content: ""
         }
-
-        // Get token from url parmas
-
-
 
         getPast();
         

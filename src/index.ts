@@ -5,6 +5,7 @@ import path from "path";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
+import cookieParser from "cookie-parser";
 
 
 const app = express();
@@ -26,6 +27,8 @@ let users = new Array();
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 //specify cors to allow all
 
@@ -42,9 +45,9 @@ app.set("views", path.join(__dirname, "www"));
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.get("/chat", (req, res) => {
-    const params = req.query;
 
-    const token = params.token as string;
+    // Check if user cookie token is present
+    const token = req.cookies.token.split("Bearer ")[1] as string;
 
     if (!token) {
         res.status(400).send("Bad Request");
@@ -58,9 +61,6 @@ app.get("/chat", (req, res) => {
         res.status(401).send("Unauthorized");
         return;
     }
-
-
-    //const user = users.find((user) => user.token === token);
 
     res.render('chat');
 });
@@ -91,7 +91,9 @@ app.post("/init", async (req, res) => {
 
     users.push(user);
 
-    res.redirect(`/chat?token=${token}`);
+    // Set the token to cookie and redirect to chat
+    res.cookie("token","Bearer "+token);
+    res.redirect(`/chat`);
 });
 
 
@@ -100,7 +102,7 @@ interface AuthenticatedSocket extends Socket {
 }
 
 io.use(async (socket: AuthenticatedSocket, next) => {
-    const token = socket.handshake.query.token as string; // JWT passed in query during connection
+    const token = socket.handshake.auth.token.split("Bearer ")[1] as string; // JWT passed in cookies during connection
 
     if (!token) {
         return next(new Error("Authentication error: Token missing"));
@@ -125,14 +127,12 @@ io.use(async (socket: AuthenticatedSocket, next) => {
 
 
 io.on('connection', (socket:AuthenticatedSocket) => {
-
     const user = socket.user;
     socket.on('message', (data) => {
-      console.log('Received data:', data);
-      // You can emit a response back to the client here
+        console.log('Received data:', data);
 
-      data.userName += user.name;
-      messages.push(data);
+        data.userName += user.name;
+        messages.push(data);
         io.emit('serverMessage', data);
     });
     socket.on('getPast', () => {
