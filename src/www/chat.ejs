@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WS-Chat</title>
-    <link type="text/css" href="style.css">
+    <link type="text/css" rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+    <div id="chat">
+    </div>
+    <div class="input">
+        <input type="text" id="content-in">
+        <input type="button" value="send" onclick="send()">
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -14,7 +20,7 @@
         console.log(token);
 
         // Connect to the server with the JWT token
-        const socket = io("http://192.168.13.62:3000?token=" + token);
+        const socket = io("http://localost:3000?token=" + token);
         let messages = new Array();
 
         let data = {
@@ -94,24 +100,35 @@
                 let user = document.createElement("p");
                 user.innerText = message.userName;
                 user.classList = "user";
-                
+
                 let content = document.createElement("h3");
                 content.innerText = message.content;
                 user.message = "content";
 
-                messageDiv.appendChild(timestamp);
-                messageDiv.appendChild(user);
-                messageDiv.appendChild(content);
+                let pfp = document.createElement("img");
+                pfp.classList = "pfp"
+                pfp.src = "/img/pfp.webp"
+
+                let left = document.createElement("div");
+                left.classList = "left";
+
+                let right = document.createElement("div");
+                right.classList = "rigth";
+
+                let title = document.createElement("div");
+                title.classList = "title";
+                
+                left.appendChild(pfp);
+                title.appendChild(user);
+                title.appendChild(timestamp);
+                right.appendChild(title);
+                right.appendChild(content);
+                messageDiv.appendChild(left);
+                messageDiv.appendChild(right);
                 chat.appendChild(messageDiv)
             })
         }
 
     </script>
-    <div id="chat">
-    </div>
-    <div class="input">
-        <input type="text" id="content-in">
-        <input type="button" value="send" onclick="send()">
-    </div>
 </body>
 </html>

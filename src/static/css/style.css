@@ -1,0 +1,42 @@
+body {
+    background-color: aqua;
+}
+
+.message {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    grid-template-rows: 1fr;
+}
+
+.right {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1rem 1fr;
+}
+.title {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+}
+
+.user {
+    padding: 0;
+    margin: 0;
+}
+
+h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.pfp {
+    width: 4rem;
+    height: 4rem;
+}
+
+.time {
+    padding: 0;
+    margin: 0;
+}

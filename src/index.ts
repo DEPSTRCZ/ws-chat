@@ -39,6 +39,7 @@ app.use((req, res, next) => {
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "www"));
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.get("/chat", (req, res) => {
     const params = req.query;
