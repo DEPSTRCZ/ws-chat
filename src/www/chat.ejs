@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WS-Chat</title>
     <link type="text/css" rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="chat">
     </div>
     <div class="input">
-        <input type="text" id="content-in">
+        <textarea id="content-in"></textarea>
         <input type="button" value="send" onclick="send()">
     </div>
     <script src="/socket.io/socket.io.js"></script>
@@ -20,7 +23,7 @@
         console.log(token);
 
         // Connect to the server with the JWT token
-        const socket = io("http://localost:3000?token=" + token);
+        const socket = io("http://localhost:3000?token=" + token);
         let messages = new Array();
 
         let data = {

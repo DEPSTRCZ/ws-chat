@@ -1,11 +1,24 @@
 body {
-    background-color: aqua;
+    padding: 0;
+    margin: 0;
+    padding-left: 20vw;
+    padding-right: 20vw;
+    background-color: #778DA9;
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#chat {
+    background-color: #E0E1DD;
+    padding: 1rem;
 }
 
 .message {
     display: grid;
     grid-template-columns: 5rem 1fr;
     grid-template-rows: 1fr;
+    margin-bottom: 1rem;
 }
 
 .right {
@@ -16,7 +29,7 @@ body {
 .title {
     display: flex;
     align-items: baseline;
-    gap: 1rem;
+    gap: 0.5rem;
     padding: 0;
     margin: 0;
 }
@@ -24,11 +37,14 @@ body {
 .user {
     padding: 0;
     margin: 0;
+    color: #1B263B;
 }
 
 h3 {
     padding: 0;
     margin: 0;
+    word-break: break-all;
+    color: #0D1B2A;
 }
 
 .pfp {
@@ -39,4 +55,23 @@ h3 {
 .time {
     padding: 0;
     margin: 0;
+    color: #415A77;
+}
+
+@media (max-device-width: 900px){ 
+    body {
+        padding-left: 0;
+        padding-right: 0;
+    } 
+}
+
+#content-in {
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    resize: none;
 }
