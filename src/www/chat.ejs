@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WS-Chat</title>
+    <link type="text/css" rel="stylesheet" href="/css/reset.css">
     <link type="text/css" rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +13,10 @@
 <body>
     <div id="chat">
     </div>
-    <div class="input">
-        <textarea id="content-in"></textarea>
-        <input type="button" value="send" onclick="send()">
-    </div>
+    <form class="input">
+        <textarea id="content-in" required ></textarea>
+        <input type="submit" value="send" onclick="send()">
+    </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         function getCookieByName(name) {
@@ -71,6 +72,10 @@
         }
 
         const token = getCookieByName("token");
+        console.log("ss",token);
+
+        let enter = false;
+        let shift = false;
 
         // Connect to the server with the JWT token
         const socket = io({
@@ -82,9 +87,10 @@
 
         let data = {
             time: "",
-            userName: "",
             content: ""
         }
+
+        
 
         getPast();
         
@@ -112,15 +118,36 @@
         });
 
         function send() {
-            console.log("send");
-            console.log(checkExpiry());
             let content = document.getElementById("content-in");
+            if (content.value.length == 0) {
+                return;
+            }
             let date = new Date();
             
             data.content = content.value;
             data.time = new Date();
             socket.emit('message', data);
+            content.value = "";
         }
+        /*
+        document.addEventListener('keydown', (event) => {
+            if (event.key == "Enter") {
+                enter = true;
+            } else if (event.key == "Shift") {
+                shift = true;
+            }
+            if (enter && !shift) {
+                send();
+            }
+        })
+
+        document.addEventListener('keyup', (event) => {
+            if (event.key == "Enter") {
+                enter = false;
+            } else if (event.key == "Shift") {
+                shift = false;
+            }
+        })*/
 
         function getPast() {
             socket.emit('getPast')
@@ -135,10 +162,9 @@
 
         function updateMessages() {
             chat = document.getElementById("chat")
+            let oldScrollHeight = chat.scrollHeight;
             chat.innerHTML = ""
             messages.forEach((message) => {
-                //chat.innerHTML += "<p>" + message.time + " " + message.user + " " + message.content + "</p>";
-
                 let messageDiv = document.createElement("div");
                 messageDiv.classList = "message";
 
@@ -181,6 +207,10 @@
                 messageDiv.appendChild(right);
                 chat.appendChild(messageDiv)
             })
+            
+            if (chat.scrollTop + chat.offsetHeight == oldScrollHeight) {
+                chat.scrollTo(0, chat.scrollHeight);
+            }
         }
 
     </script>

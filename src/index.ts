@@ -177,7 +177,7 @@ io.on('connection', (socket:AuthenticatedSocket) => {
     socket.on('message', (data) => {
         console.log('Received data:', data);
 
-        data.userName += user.name;
+        data.userName = user.name;
         messages.push(data);
         io.emit('serverMessage', data);
     });
