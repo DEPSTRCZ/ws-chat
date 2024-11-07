@@ -28,9 +28,49 @@
             }
             return null;
         }
-        const token = getCookieByName("token");
-        console.log("ss",token);
 
+        // https://stackoverflow.com/questions/51292406/check-if-token-expired-using-this-jwt-library + custom
+        function checkExpiry() {
+            const token = getCookieByName("token");
+            if (token == null) {
+                window.location.href = "/init";
+            }
+
+            const { exp } = JSON.parse(atob(token.split(".")[1]));
+            
+            // CHeck if the token is below the renew threshold or expired
+
+            // THRESHOLD (TO ENV)
+            const renewThreshold = 300* 1000; // 5min
+
+            if (exp * 1000 - Date.now() < renewThreshold) {
+
+                try {
+                    // Renew the token
+                    const response = fetch("/renew", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include"
+                    });
+                    return response.ok ? {"status": "renewed"} : {"status": "error"};
+                } catch (error) {
+                    console.error("Error renewing token:", error);
+                    return {"status": "error"};
+                }
+            } else if (exp * 1000 - Date.now() < 0) {
+                // Token expired
+                return {"status": "expired"};
+            } else {
+                // Token is still valid
+                return {"status": "valid"};
+            }
+
+
+        }
+
+        const token = getCookieByName("token");
 
         // Connect to the server with the JWT token
         const socket = io({
@@ -73,6 +113,7 @@
 
         function send() {
             console.log("send");
+            console.log(checkExpiry());
             let content = document.getElementById("content-in");
             let date = new Date();
             
