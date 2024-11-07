@@ -69,6 +69,49 @@ app.get("/", (req, res) => {
     res.render('main');
 });
 
+app.post("/refresh", (req, res) => {
+    // Check if user cookie token is present
+
+    const token = req.cookies.token.split("Bearer ")[1] as string;
+
+    if (!token) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+
+    // Verify the token
+    try {
+        const isOk = jwt.verify(token, JWT_SECRET);
+
+        if (!isOk) {
+            res.status(401).send("Not Needed");
+            return;
+        }
+        
+    } catch (e) {
+
+        // Check if the token was expired
+        if (e instanceof Error && e.name === "TokenExpiredError") {
+            const user = jwt.decode(token) as User;
+
+            if (!user) {
+                res.status(401).send("Unauthorized");
+                return;
+            }
+
+            const newToken = jwt.sign({ uuid: user.uuid, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
+            res.cookie("token","Bearer "+newToken);
+            res.status(200).send("Token Refreshed");
+            return;
+        }
+
+        res.status(401).send("Unauthorized");
+        return;
+    }
+
+});
+;
+
 app.post("/init", async (req, res) => {
     const name = req.body.user;
 
@@ -78,15 +121,13 @@ app.post("/init", async (req, res) => {
     }
 
     //Generate a random userid
-    const userId = randomUUID();
-
-    const token = jwt.sign({ id: userId, name: name }, JWT_SECRET, { expiresIn: '1h' });
+    const userUUID = randomUUID();
+    const token = jwt.sign({ id: userUUID, name: name }, JWT_SECRET, { expiresIn: '1h' });
 
     // Create a new user object
     const user = {
-        id: userId,
         name: name,
-        uuid: userId,
+        uuid: userUUID,
     };
 
     users.push(user);
@@ -97,9 +138,7 @@ app.post("/init", async (req, res) => {
 });
 
 
-interface AuthenticatedSocket extends Socket {
-    user?: any;
-}
+
 
 io.use(async (socket: AuthenticatedSocket, next) => {
     const token = socket.handshake.auth.token.split("Bearer ")[1] as string; // JWT passed in cookies during connection
@@ -115,7 +154,7 @@ io.use(async (socket: AuthenticatedSocket, next) => {
         if (!user) {
             return next(new Error("Authentication error: Invalid token"));
         }
-        socket["user"] = user;
+        socket["user"] = user as User;
 
         next();
     } catch (e) {
@@ -128,6 +167,13 @@ io.use(async (socket: AuthenticatedSocket, next) => {
 
 io.on('connection', (socket:AuthenticatedSocket) => {
     const user = socket.user;
+
+    // If user is not authenticated, disconnect
+    if (!user) {
+        socket.disconnect();
+        return;
+    }
+
     socket.on('message', (data) => {
         console.log('Received data:', data);
 
@@ -145,3 +191,13 @@ io.on('connection', (socket:AuthenticatedSocket) => {
 httpServer.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+interface User {
+    uuid: string;
+    name: string;
+}
+    
+
+interface AuthenticatedSocket extends Socket {
+    user?: User;
+}
