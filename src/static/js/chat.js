@@ -10,7 +10,7 @@ function getCookieByName(name) {
 }
 
 // https://stackoverflow.com/questions/51292406/check-if-token-expired-using-this-jwt-library + custom
-function checkExpiry() {
+function checkExpiryAndHandle() {
     const token = getCookieByName("token");
     if (token == null) {
         window.location.href = "/init";
@@ -21,7 +21,7 @@ function checkExpiry() {
     // CHeck if the token is below the renew threshold or expired
 
     // THRESHOLD (TO ENV)
-    const renewThreshold = 300* 1000; // 5min
+    const renewThreshold = 10* 1000; // 5min
 
     if (exp * 1000 - Date.now() < renewThreshold) {
 
@@ -51,7 +51,6 @@ function checkExpiry() {
 }
 
 const token = getCookieByName("token");
-console.log("ss",token);
 
 let enter = false;
 let shift = false;
@@ -76,7 +75,7 @@ getPast();
 socket.on('serverMessage', async (msg, callback) => {
     console.log("msg",msg);
     messages.push(msg)
-    console.log(messages);
+    checkExpiryAndHandle();
     updateMessages();
 });
 

@@ -1,23 +1,65 @@
 body {
-    padding: 0;
-    margin: 0;
+    padding: 1rem;
     padding-left: 20vw;
     padding-right: 20vw;
     height: 100lvh;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 5rem;
-    background-color: #778DA9;
     font-family: "Roboto", serif;
     font-weight: 400;
     font-style: normal;
+    background: linear-gradient(305deg, #00337a, #06005d, #250050, #690040);
+    background-size: 800% 800%;
+
+    -webkit-animation: BackGroundScroll 30s ease infinite;
+    -moz-animation: BackGroundScroll 30s ease infinite;
+    animation: BackGroundScroll 30s ease infinite;
+}
+
+@-webkit-keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
+}
+@-moz-keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
+}
+@keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
 }
 
 #chat {
-    background-color: #E0E1DD;
     padding: 1rem;
     overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
     scroll-behavior: smooth;
+}
+
+#chat::-webkit-scrollbar {
+    display: none;
+}
+
+.container {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1px auto;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.144);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.line {
+    background-color: rgba(255, 255, 255, 0.12);;
+    width: 100%;
+    height: auto;
 }
 
 .message {
@@ -43,25 +85,27 @@ body {
 .user {
     padding: 0;
     margin: 0;
-    color: #1B263B;
+    color: #bfd4ff;
 }
 
 h3 {
     padding: 0;
     margin: 0;
     word-break: break-all;
-    color: #0D1B2A;
+    color: #f1f8ff;
 }
 
 .pfp {
     width: 4rem;
     height: 4rem;
+    border-radius: 50%;
+    box-shadow: rgba(240, 46, 240, 0.2) 4px 4px, rgba(230, 66, 230, 0.13) 8px 8px, rgba(185, 46, 240, 0.041) 12px 12px;
 }
 
 .time {
     padding: 0;
     margin: 0;
-    color: #415A77;
+    color: #97c8ff;
 }
 
 @media (max-device-width: 900px){ 
@@ -72,18 +116,47 @@ h3 {
 }
 
 .input{
+    margin: 0.5rem;
     display: grid;
-    grid-template-columns: 1fr 5rem;
+    padding: 0.5rem;
+    grid-template-columns: 1fr auto;
     grid-template-rows: 1fr;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.144);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.input::-webkit-scrollbar {
+    display: none;
+} 
+
 #content-in {
-    width: 100%;
-    height: 5rem;
+    margin-right: 1rem;
+    width: auto;
+    height: 2.7rem;
+    color: #f1f8ff;
     padding: 12px 20px;
     box-sizing: border-box;
     border: 2px solid #ccc;
     border-radius: 4px;
-    background-color: #f8f8f8;
     resize: none;
+    background: none;
+    outline: none;
+    border: none;
+}
+
+.send {
+    width: 2.75rem;
+    height: 2.75rem;
+    color: rgba(255, 255, 255);
+}
+
+.img {
+    color: rgba(255, 255, 255);
 }
