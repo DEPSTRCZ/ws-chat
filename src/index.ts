@@ -6,13 +6,25 @@ import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import cookieParser from "cookie-parser";
+import dotenv from 'dotenv'; 
+
+
 
 
 const app = express();
 const port = 3000;
+dotenv.config({ path: path.join(__dirname,"../.env") });
+
+
+const JWT_SECRET = process.env.JWT_TOKEN_SECRET;
+const JWT_EXPIRY = process.env.JWT_EXPIRY;
+const JWT_EXPIRY_THRESHOLD = process.env.JWT_EXPIRY_THRESHOLD;
+if (!JWT_SECRET || !JWT_EXPIRY || !JWT_EXPIRY_THRESHOLD) {
+    console.error("Something is wrong in .env file");
+    process.exit(1);
+}
 
 // by mělo bejt v .env ale co už
-const JWT_SECRET = "secretASKOHDIZIOASDGZIGUI7654465654654asdasd__-asdasd%";
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -47,10 +59,18 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.get("/chat", (req, res) => {
 
     // Check if user cookie token is present
-    const token = req.cookies.token.split("Bearer ")[1] as string;
+    const tokenCookie = req.cookies.token;
+
+    if (!tokenCookie) {
+        res.status(400).send("To nemuzes :c");
+        return;
+    }
+
+    const token = tokenCookie.split("Bearer ")[1] as string;
+
 
     if (!token) {
-        res.status(400).send("Bad Request");
+        res.status(400).send("Unauthorized");
         return;
     }
 
@@ -99,13 +119,14 @@ app.post("/refresh", (req, res) => {
                 return;
             }
 
-            const newToken = jwt.sign({ uuid: user.uuid, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
+            const newToken = jwt.sign({ uuid: user.uuid, name: user.name }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
             res.cookie("token","Bearer "+newToken);
             res.status(200).send("Token Refreshed");
             return;
         }
 
-        res.status(401).send("Unauthorized");
+        // If the token is invalid / expired redirect to main
+        res.redirect("/");
         return;
     }
 
@@ -122,7 +143,7 @@ app.post("/init", async (req, res) => {
 
     //Generate a random userid
     const userUUID = randomUUID();
-    const token = jwt.sign({ id: userUUID, name: name }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: userUUID, name: name }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 
     // Create a new user object
     const user = {
