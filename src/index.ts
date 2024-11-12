@@ -90,7 +90,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, 'www/html/main.html'));
 });
 
-app.post("/refresh", (req, res) => {
+app.post("/renew", (req, res) => {
     // Check if user cookie token is present
 
     const token = req.cookies.token.split("Bearer ")[1] as string;
@@ -102,15 +102,22 @@ app.post("/refresh", (req, res) => {
 
     // Verify the token
     try {
-        const isOk = jwt.verify(token, JWT_SECRET);
+        const isOk = jwt.verify(token, JWT_SECRET) as User;
 
         if (!isOk) {
             res.status(401).send("Not Needed");
             return;
         }
+
+        // debug print for how long is the token valid
+        const now = new Date().getTime() / 1000;
+        console.log("Token is valid for " + (isOk.exp - now) + " seconds");
+
+        res.status(200).send("Token is valid");
+
+        // If the token is valid, 
         
     } catch (e) {
-
         // Check if the token was expired
         if (e instanceof Error && e.name === "TokenExpiredError") {
             const user = jwt.decode(token) as User;
@@ -195,14 +202,26 @@ io.on('connection', (socket:AuthenticatedSocket) => {
         socket.disconnect();
         return;
     }
-
+    
     socket.on('message', (data) => {
         console.log('Received data:', data);
+        // Check if the user has a valid token and is not expired
+        try {
+            jwt.verify(socket.handshake.auth.token.split("Bearer ")[1], JWT_SECRET) as User;
+        } catch (e) {
+            return socket.disconnect();
+        }
 
         data.userName = user.name;
         messages.push(data);
         io.emit('serverMessage', data);
     });
+
+    socket.on("typing", (data) => {
+        console.log("Typing",  { userName: user.name });
+        io.emit("typing", { userName: user.name });
+    });
+
     socket.on('getPast', () => {
         io.emit('serverReturn', messages);
         console.log("reqest for older messages")
@@ -217,6 +236,7 @@ httpServer.listen(port, () => {
 interface User {
     uuid: string;
     name: string;
+    exp: number;
 }
     
 
