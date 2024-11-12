@@ -1,14 +1,117 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = require("socket.io");
+const path_1 = __importDefault(require("path"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = require("crypto");
 const app = (0, express_1.default)();
 const port = 3000;
-app.get("/", (req, res) => {
-    res.send("Hello World!");
+// by mělo bejt v .env ale co už
+const JWT_SECRET = "secretASKOHDIZIOASDGZIGUI7654465654654asdasd__-asdasd%";
+const httpServer = http_1.default.createServer(app);
+const io = new socket_io_1.Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
 });
-app.listen(port, () => {
-    console.log(`Server started at http://localhost:${port}`);
+let messages = new Array();
+let users = new Array();
+app.use(body_parser_1.default.urlencoded({ extended: true }));
+//specify cors to allow all
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "*");
+    next();
+});
+app.use(express_1.default.static(path_1.default.join(__dirname, 'static')));
+app.get("/chat", (req, res) => {
+    const params = req.query;
+    const token = params.token;
+    if (!token) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+    // Verify the token
+    try {
+        jsonwebtoken_1.default.verify(token, JWT_SECRET);
+    }
+    catch (e) {
+        res.status(401).send("Unauthorized");
+        return;
+    }
+    //const user = users.find((user) => user.token === token);
+    res.sendFile(path_1.default.join(__dirname, 'www/html/chat.html'));
+});
+app.get("/", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, 'www/html/main.html'));
+});
+app.post("/init", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = req.body.user;
+    if (!name) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+    //Generate a random userid
+    const userId = (0, crypto_1.randomUUID)();
+    const token = jsonwebtoken_1.default.sign({ id: userId, name: name }, JWT_SECRET, { expiresIn: '1h' });
+    // Create a new user object
+    const user = {
+        id: userId,
+        name: name,
+        uuid: userId,
+    };
+    users.push(user);
+    res.redirect(`/chat?token=${token}`);
+}));
+io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = socket.handshake.query.token; // JWT passed in query during connection
+    if (!token) {
+        return next(new Error("Authentication error: Token missing"));
+    }
+    // Verify the token and attach user info to the socket
+    try {
+        const user = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+        if (!user) {
+            return next(new Error("Authentication error: Invalid token"));
+        }
+        socket["user"] = user;
+        next();
+    }
+    catch (e) {
+        return next(new Error("Authentication error: " + e));
+    }
+}));
+io.on('connection', (socket) => {
+    const user = socket.user;
+    socket.on('message', (data) => {
+        console.log('Received data:', data);
+        // You can emit a response back to the client here
+        data.userName += user.name;
+        messages.push(data);
+        io.emit('serverMessage', data);
+    });
+    socket.on('getPast', () => {
+        io.emit('serverReturn', messages);
+        console.log("reqest for older messages");
+    });
+});
+httpServer.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });

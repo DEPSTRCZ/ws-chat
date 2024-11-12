@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build-lnx": "tsc && cp -r ./src/www/html/ ./dist/www/ && cp -r ./src/static/ ./dist/",
+    "build-wds": "tsc & copy src\\www\\html\\ dist\\www\\ & copy src\\static\\ dist\\",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts"
   },
@@ -17,13 +18,14 @@
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.7",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "ts-node": "^10.9.2",
-    "tsc": "^2.0.4",
     "typescript": "^5.6.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.7"
+    "@types/jsonwebtoken": "^9.0.7",
+    "esbuild": "0.24.0"
   }
 }

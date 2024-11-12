@@ -13,10 +13,10 @@
 <body>
     <div id="chat">
     </div>
-    <form class="input">
-        <textarea id="content-in" required ></textarea>
-        <input type="submit" value="send" onclick="send()">
-    </form>
+    <div class="input">
+        <textarea id="content-in"></textarea>
+        <input type="button" value="send" onclick="sendData()">
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         function getCookieByName(name) {

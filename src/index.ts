@@ -40,8 +40,6 @@ app.use((req, res, next) => {
 });
 
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "www"));
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.get("/chat", (req, res) => {
@@ -62,11 +60,14 @@ app.get("/chat", (req, res) => {
         return;
     }
 
-    res.render('chat');
+
+    //const user = users.find((user) => user.token === token);
+
+    res.sendFile(path.join(__dirname, 'www/html/chat.html'));
 });
 
 app.get("/", (req, res) => {
-    res.render('main');
+    res.sendFile(path.join(__dirname, 'www/html/main.html'));
 });
 
 app.post("/refresh", (req, res) => {
