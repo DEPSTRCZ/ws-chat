@@ -10,7 +10,7 @@ function getCookieByName(name) {
 }
 
 // https://stackoverflow.com/questions/51292406/check-if-token-expired-using-this-jwt-library + custom
-function checkExpiryAndHandle() {
+function checkExpiry() {
     const token = getCookieByName("token");
     if (token == null) {
         window.location.href = "/init";
@@ -21,12 +21,14 @@ function checkExpiryAndHandle() {
     // CHeck if the token is below the renew threshold or expired
 
     // THRESHOLD (TO ENV)
-    const renewThreshold = 10* 1000; // 5min
+    const renewThreshold = 10//* 1000; // 5min
+    console.log(exp - new Date().getTime()/1000, renewThreshold);
 
-    if (exp * 1000 - Date.now() < renewThreshold) {
+    if (exp - new Date().getTime()/1000 <= renewThreshold) {
 
         try {
             // Renew the token
+            console.log("Renewing token...");
             const response = fetch("/renew", {
                 method: "POST",
                 headers: {
@@ -50,10 +52,11 @@ function checkExpiryAndHandle() {
 
 }
 
+function isTyping() {
+    // Send a message to the server that the user is typing
+}
 const token = getCookieByName("token");
 
-let enter = false;
-let shift = false;
 
 // Connect to the server with the JWT token
 const socket = io({
@@ -70,19 +73,19 @@ let data = {
 
 
 
+
 getPast();
 
 socket.on('serverMessage', async (msg, callback) => {
-    console.log("msg",msg);
     messages.push(msg)
-    checkExpiryAndHandle();
+    checkExpiry();
     updateMessages();
 });
 
 socket.on('serverReturn', async (msg, callback) => {
-    console.log("array",msg);
     messages = msg;
     updateMessages();
+
 });
 
 // Optional: Handle connection errors
@@ -95,8 +98,9 @@ socket.on("disconnect", () => {
     console.log("Socket.IO connection disconnected");
 });
 
+let content = document.getElementById("content-in");
 function send() {
-    let content = document.getElementById("content-in");
+    
     if (content.value.length == 0) {
         return;
     }
@@ -107,25 +111,27 @@ function send() {
     socket.emit('message', data);
     content.value = "";
 }
-/*
+
 document.addEventListener('keydown', (event) => {
-    if (event.key == "Enter") {
-        enter = true;
-    } else if (event.key == "Shift") {
-        shift = true;
-    }
-    if (enter && !shift) {
+    console.log(event.key,event.shiftKey)
+    if (event.key == "Enter" && event.shiftKey) {
+        return
+    } else if (event.key == "Enter") {
         send();
     }
 })
 
-document.addEventListener('keyup', (event) => {
-    if (event.key == "Enter") {
-        enter = false;
-    } else if (event.key == "Shift") {
-        shift = false;
+function isTyping() {
+
+    socket.emit('typing');
+}
+
+content.addEventListener("input", (event) => {
+    // Every 3 characters, send a message to the server that the user is typing
+    if (event.target.value.length % 10 == 0) {
+        socket.emit('typing');
     }
-})*/
+});
 
 function getPast() {
     socket.emit('getPast')
