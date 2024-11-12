@@ -21,7 +21,7 @@ function checkExpiry() {
     // CHeck if the token is below the renew threshold or expired
 
     // THRESHOLD (TO ENV)
-    const renewThreshold = 10//* 1000; // 5min
+    const renewThreshold = 600 
     console.log(exp - new Date().getTime()/1000, renewThreshold);
 
     if (exp - new Date().getTime()/1000 <= renewThreshold) {
@@ -52,9 +52,53 @@ function checkExpiry() {
 
 }
 
-function isTyping() {
-    // Send a message to the server that the user is typing
+function sendClientSytemMessage(message,type) {
+    let messageDiv = document.createElement("div");
+    messageDiv.classList = "message"+((type == "error") ? " error" : " info");
+    messageDiv.id = "system";
+
+    let timestamp = document.createElement("p");
+    timestamp.classList = "time";
+    messageTime = new Date();
+    timestamp.innerText = messageTime.getMonth() + "." 
+        + messageTime.getDate() + " " 
+        + formatTime(messageTime.getHours()) + ":" 
+        + formatTime(messageTime.getMinutes()) + ":" 
+        + formatTime(messageTime.getSeconds());
+
+    let user = document.createElement("p");
+    user.innerText = "System";
+    user.classList = "user";
+
+    let content = document.createElement("h3");
+    content.innerText = message;
+    user.message = "content";
+
+    let pfp = document.createElement("img");
+    pfp.classList = "pfp"
+    pfp.src = (type == "error") ? "/img/sign-warning.svg" : "/img/sign-info.svg";
+
+    let left = document.createElement("div");
+    left.classList = "left";
+
+    let right = document.createElement("div");
+    right.classList = "rigth";
+
+    let title = document.createElement("div");
+    title.classList = "title";
+    
+    left.appendChild(pfp);
+    title.appendChild(user);
+    title.appendChild(timestamp);
+    right.appendChild(title);
+    right.appendChild(content);
+    messageDiv.appendChild(left);
+    messageDiv.appendChild(right);
+    chat.appendChild(messageDiv)
 }
+
+
+let chat = document.getElementById("chat")
 const token = getCookieByName("token");
 
 
@@ -72,9 +116,9 @@ let data = {
 }
 
 
-
-
+sendClientSytemMessage("Welcome to the chat! Please remember that all messages are user-generated, and we do not take responsibility for any content shared here. Thanks for keeping things respectful!", "info");
 getPast();
+
 
 socket.on('serverMessage', async (msg, callback) => {
     messages.push(msg)
@@ -91,11 +135,14 @@ socket.on('serverReturn', async (msg, callback) => {
 // Optional: Handle connection errors
 socket.on("connect_error", (error) => {
     console.error("Socket.IO Connection Error:", error);
+    sendClientSytemMessage("Error connecting to the server. Please try again later. \nReason: "+error, "error");
 });
 
 // Optional: Define what happens when the connection is disconnected
 socket.on("disconnect", () => {
     console.log("Socket.IO connection disconnected");
+    // send a message to the user that they have been disconnected with hyperlink to main page
+    sendClientSytemMessage("You have been disconnected from the server. Please try to reconnect by refreshing the page or go to main page.", "error");
 });
 
 let content = document.getElementById("content-in");
@@ -142,9 +189,17 @@ function formatTime(time) {
 }
 
 function updateMessages() {
-    chat = document.getElementById("chat")
     let oldScrollHeight = chat.scrollHeight;
-    chat.innerHTML = ""
+    
+    // Not sure why we need to clear the chat first.. Buuut it is not my job to do front end xD
+    // Remove all messages expect the ones with id of "system"
+    let messagesDivs = document.querySelectorAll(".message");
+    for (let message of messagesDivs) {
+        if (message.id != "system") {
+            message.remove();
+        }
+    }
+
     messages.forEach((message) => {
         let messageDiv = document.createElement("div");
         messageDiv.classList = "message";

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import http from "http";
 import { Server, Socket } from "socket.io";
 import path from "path";
@@ -7,9 +7,6 @@ import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv'; 
-
-
-
 
 const app = express();
 const port = 3000;
@@ -23,8 +20,6 @@ if (!JWT_SECRET || !JWT_EXPIRY || !JWT_EXPIRY_THRESHOLD) {
     console.error("Something is wrong in .env file");
     process.exit(1);
 }
-
-// by mělo bejt v .env ale co už
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -44,6 +39,7 @@ app.use(cookieParser());
 
 //specify cors to allow all
 
+
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -54,10 +50,39 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'static')));
 
-app.get("/chat", (req, res) => {
 
+// Check if user/session is authenticated and valid
+async function isValid(token_string: string) {
+    try {
+        const token = token_string.split("Bearer ")[1] as string;
+
+        if (!token) return false;
+
+        if (!JWT_SECRET) throw new Error("JWT_SECRET is not defined");
+        
+        const user = jwt.verify(token, JWT_SECRET) as User;
+
+        if (!user) return false;
+
+        const now = new Date().getTime() / 1000;
+
+        if (user.exp - now < Number(JWT_EXPIRY_THRESHOLD)) return false;
+
+        if (!users.find((u) => u.uuid === user.uuid)) return false;
+
+        return true;
+    } catch (e) {
+        return false;
+    }
+    
+};
+
+
+
+app.get("/chat", (req, res) => {
+    
     // Check if user cookie token is present
-    const tokenCookie = req.cookies.token;
+    const tokenCookie = req?.cookies?.token;
 
     if (!tokenCookie) {
         res.status(400).send("To nemuzes :c");
@@ -79,9 +104,6 @@ app.get("/chat", (req, res) => {
         res.status(401).send("Unauthorized");
         return;
     }
-
-
-    //const user = users.find((user) => user.token === token);
 
     res.sendFile(path.join(__dirname, 'www/html/chat.html'));
 });
@@ -206,6 +228,15 @@ io.use(async (socket: AuthenticatedSocket, next) => {
 io.on('connection', (socket:AuthenticatedSocket) => {
     const user = socket.user;
 
+    socket.use((packet, next) => {
+        // Check if the user has a valid token and is not expired
+        if (!isValid(socket.handshake.auth.token)) {
+            console.log("Invalid token");
+            return socket.disconnect();
+        }
+        next();
+    });
+
     // If user is not authenticated, disconnect
     if (!user) {
         socket.disconnect();
@@ -214,12 +245,6 @@ io.on('connection', (socket:AuthenticatedSocket) => {
 
     socket.on('message', (data) => {
         console.log('Received data:', data);
-        // Check if the user has a valid token and is not expired
-        try {
-            jwt.verify(socket.handshake.auth.token.split("Bearer ")[1], JWT_SECRET) as User;
-        } catch (e) {
-            return socket.disconnect();
-        }
 
         data.userName = user.name;
         messages.push(data);
@@ -228,6 +253,7 @@ io.on('connection', (socket:AuthenticatedSocket) => {
 
     socket.on("typing", (data) => {
         console.log("Typing",  { userName: user.name });
+
         io.emit("typing", { userName: user.name });
     });
 
