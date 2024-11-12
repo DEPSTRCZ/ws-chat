@@ -117,14 +117,11 @@ document.addEventListener('keydown', (event) => {
     if (event.key == "Enter" && event.shiftKey) {
         return
     } else if (event.key == "Enter") {
+        event.preventDefault();
         send();
     }
 })
 
-function isTyping() {
-
-    socket.emit('typing');
-}
 
 content.addEventListener("input", (event) => {
     // Every 3 characters, send a message to the server that the user is typing
