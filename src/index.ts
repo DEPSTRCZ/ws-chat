@@ -149,6 +149,15 @@ app.post("/init", async (req, res) => {
         return;
     }
 
+    // Check if a user with that name already exists
+    const userName = users.find((user) => user.name === name);
+
+    if (userName) {
+        res.status(400).send("User already exists");
+        return;
+    }
+
+
     //Generate a random userid
     const userUUID = randomUUID();
     const token = jwt.sign({ id: userUUID, name: name }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
@@ -202,7 +211,7 @@ io.on('connection', (socket:AuthenticatedSocket) => {
         socket.disconnect();
         return;
     }
-    
+
     socket.on('message', (data) => {
         console.log('Received data:', data);
         // Check if the user has a valid token and is not expired
