@@ -31,7 +31,8 @@ body {
 }
 
 #chat {
-    padding: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     overflow-y: scroll;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
@@ -46,7 +47,7 @@ body {
     display: grid;
     height: 100%;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1px auto;
+    grid-template-rows: 1fr 1px 30px 1px auto;
     /* From https://css.glass */
     background: rgba(255, 255, 255, 0.144);
     border-radius: 16px;
@@ -67,7 +68,7 @@ body {
     grid-template-columns: 5rem 1fr;
     grid-template-rows: 1fr;
     margin-bottom: 1rem;
-    padding: 1rem;
+    margin-top: 1rem;
 }
 
 .info {
@@ -88,6 +89,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+
 .right {
     display: grid;
     grid-template-columns: 1fr;
@@ -107,6 +109,11 @@ body {
     color: #bfd4ff;
 }
 
+.user.currentUser {
+    color: #4cf6fc;
+}
+
+
 h3 {
     padding: 0;
     margin: 0;
@@ -114,11 +121,30 @@ h3 {
     color: #f1f8ff;
 }
 
+h3.currentUser {
+    color: #64ffde;
+}
+
+
 .pfp {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: rgba(240, 46, 240, 0.2) 4px 4px, rgba(230, 66, 230, 0.13) 8px 8px, rgba(185, 46, 240, 0.041) 12px 12px;
+}
+
+.pfp.currentUser {
+    box-shadow: rgba(46, 107, 240, 0.2) 4px 4px, rgba(66, 118, 230, 0.13) 8px 8px, rgba(46, 98, 240, 0.041) 12px 12px;
+}
+
+.left {
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
-    box-shadow: rgba(240, 46, 240, 0.2) 4px 4px, rgba(230, 66, 230, 0.13) 8px 8px, rgba(185, 46, 240, 0.041) 12px 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(240, 46, 240, 0.2);
 }
 
 .time {
@@ -127,10 +153,13 @@ h3 {
     color: #97c8ff;
 }
 
+.time.currentUser {
+    color: #3fced8;
+}
+
 @media (max-device-width: 900px){ 
     body {
-        padding-left: 0;
-        padding-right: 0;
+        padding: 1rem;
     } 
 }
 
@@ -168,7 +197,15 @@ h3 {
     background: none;
     outline: none;
     border: none;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
+
+#content-in::-webkit-scrollbar {
+    display: none;
+}
+
 
 .send {
     width: 2.75rem;
@@ -178,4 +215,22 @@ h3 {
 
 .img {
     color: rgba(255, 255, 255);
+}
+
+#typing {
+    padding-left: 1rem;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-rows: 1fr;
+    opacity: 0;
+}
+
+.typing-anim {
+    color: white;
+    width: auto;
+    height: 28px;
+}
+
+#typing-user {
+    margin-right: 0.4rem;
 }

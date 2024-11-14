@@ -1,0 +1,90 @@
+body {
+    height: 100lvh;
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: normal;
+    background: linear-gradient(305deg, #00337a, #06005d, #250050, #690040);
+    background-size: 800% 800%;
+
+    -webkit-animation: BackGroundScroll 30s ease infinite;
+    -moz-animation: BackGroundScroll 30s ease infinite;
+    animation: BackGroundScroll 30s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@-webkit-keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
+}
+@-moz-keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
+}
+@keyframes BackGroundScroll {
+    0%{background-position:0% 73%}
+    50%{background-position:100% 28%}
+    100%{background-position:0% 73%}
+}
+
+.card {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.144);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+h1 {
+    color: white;
+}
+
+h4 {
+    color: white
+}
+
+input[type=text] {
+    display: grid;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.144);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    outline: none;
+    border: none;
+    color: white;
+}
+
+input[type=submit] {
+    display: grid;
+    padding: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.404);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    transition: all 0.2s;
+}
+
+input[type=submit]:hover {
+    background: rgba(155, 218, 255, 0.726);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.3px);
+    -webkit-backdrop-filter: blur(15.3px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}

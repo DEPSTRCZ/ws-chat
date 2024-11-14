@@ -261,6 +261,11 @@ io.on('connection', (socket:AuthenticatedSocket) => {
         io.emit('serverReturn', messages);
         console.log("reqest for older messages")
     });
+
+    socket.on('getName', (id) => {
+        socket.emit('name', user.name);
+        console.log("reqest for clients name")
+    });
 });
 
 
