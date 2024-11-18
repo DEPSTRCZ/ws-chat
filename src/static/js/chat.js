@@ -67,7 +67,7 @@ function sendClientSytemMessage(message,type) {
         + formatTime(messageTime.getSeconds());
 
     let user = document.createElement("p");
-    user.innerText = "Systém";
+    user.innerText = "System";
     user.classList = "user";
 
     let content = document.createElement("h3");
@@ -121,7 +121,7 @@ let data = {
 }
 
 
-sendClientSytemMessage("Vítejte v chatu! Mějte prosím na paměti, že všechny zprávy jsou vytvářeny uživateli a neneseme odpovědnost za jakýkoli obsah sdílený zde. Děkujeme, že zachováváte respekt!", "info");
+sendClientSytemMessage("Welcome to the chat! Please remember that all messages are user-generated, and we do not take responsibility for any content shared here. Thanks for keeping things respectful!", "info");
 getName();
 getPast();
 updateDisplay();
@@ -148,14 +148,14 @@ socket.on("serverCritical", async (msg, callback) => {
 // Optional: Handle connection errors
 socket.on("connect_error", (error) => {
     console.error("Socket.IO Connection Error:", error);
-    sendClientSytemMessage("Nepodařilo se připojit k serveru. Zkuste to prosím později. \nDůvod: "+error, "error");
+    sendClientSytemMessage("Error connecting to the server. Please try again later. \nReason: "+error, "error");
 });
 
 // Optional: Define what happens when the connection is disconnected
 socket.on("disconnect", () => {
     console.log("Socket.IO connection disconnected");
     // send a message to the user that they have been disconnected with hyperlink to main page
-    sendClientSytemMessage("Spojení bylo přeušeno, prosím obnov stránku nebo jdi na main page.", "error");
+    sendClientSytemMessage("You have been disconnected from the server. Please try to reconnect by refreshing the page or go to main page.", "error");
 });
 
 socket.on("typing", (user) => {
