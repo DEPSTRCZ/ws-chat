@@ -170,7 +170,7 @@ socket.on("typing", (user) => {
 
 socket.on('name', async (nameGot) => {
     userName = nameGot;
-    console.log(userName);
+    //console.log(userName);
     
 });
 
@@ -311,7 +311,7 @@ function updateMessages() {
         messageDiv.appendChild(right);
         chat.appendChild(messageDiv)
     })
-    console.log(Math.round(chat.scrollTop), chat.offsetHeight, Math.round(chat.scrollTop) + chat.offsetHeight, oldScrollHeight);
+    //console.log(Math.round(chat.scrollTop), chat.offsetHeight, Math.round(chat.scrollTop) + chat.offsetHeight, oldScrollHeight);
     
     if ((Math.round(chat.scrollTop) + chat.offsetHeight == oldScrollHeight) || ((Math.round(chat.scrollTop) + chat.offsetHeight + 1 == oldScrollHeight))) {
         chat.scrollTo(0, chat.scrollHeight);
