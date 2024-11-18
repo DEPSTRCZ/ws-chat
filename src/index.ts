@@ -16,6 +16,7 @@ dotenv.config({ path: path.join(__dirname,"../.env") });
 const JWT_SECRET = process.env.JWT_TOKEN_SECRET;
 const JWT_EXPIRY = process.env.JWT_EXPIRY;
 const JWT_EXPIRY_THRESHOLD = process.env.JWT_EXPIRY_THRESHOLD;
+const TIME_RESET = process.env.TIME_RESET || null;
 if (!JWT_SECRET || !JWT_EXPIRY || !JWT_EXPIRY_THRESHOLD) {
     console.error("Something is wrong in .env file");
     process.exit(1);
@@ -267,6 +268,17 @@ io.on('connection', (socket:AuthenticatedSocket) => {
         console.log("reqest for clients name")
     });
 });
+
+if (TIME_RESET) {
+    // If TIME_RESET is set, emit reset message and reset the messages array
+    setInterval(() => {
+        io.emit("serverCritical", "Server se resetuje...");
+        setTimeout(() => {
+            messages = [];
+            users = [];
+        }, 3000);
+    }, Number(TIME_RESET));
+}
 
 
 httpServer.listen(port, () => {
