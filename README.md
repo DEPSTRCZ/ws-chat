@@ -8,7 +8,7 @@
 
 
 ### 🎨 Frontend by:  
-**Vojta Hotař [Mirroray41](https://github.com/Mirroray41)**  
+**Vojtěch Hotař [Mirroray41](https://github.com/Mirroray41)**  
 
 ### ⚙️ Backend by:  
 **Jiří Edelmann [DEPSTRCZ](https://github.com/DEPSTRCZ)**  
