@@ -52,6 +52,7 @@ input[type=text] {
     display: grid;
     padding: 0.5rem;
     margin-top: 1rem;
+    width: 100%;
     /* From https://css.glass */
     background: rgba(255, 255, 255, 0.144);
     border-radius: 16px;
@@ -87,4 +88,18 @@ input[type=submit]:hover {
     backdrop-filter: blur(15.3px);
     -webkit-backdrop-filter: blur(15.3px);
     border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+p {
+    color: white;
+    margin-top: 2rem;
+}
+
+a {
+    color: white;
+    margin-top: 1rem;
+
+    align-content: center;
+    justify-content: center;
+    text-align: center;
 }
