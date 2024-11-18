@@ -42,10 +42,12 @@ body {
 
 h1 {
     color: white;
+    text-align: center;
 }
 
 h4 {
-    color: white
+    color: white;
+    text-align: center;
 }
 
 input[type=text] {
@@ -93,6 +95,7 @@ input[type=submit]:hover {
 p {
     color: white;
     margin-top: 2rem;
+    text-align: center;
 }
 
 a {
@@ -102,4 +105,5 @@ a {
     align-content: center;
     justify-content: center;
     text-align: center;
+    width: 100%;
 }
